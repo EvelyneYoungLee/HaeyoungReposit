@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BoardDAO">
+
+	<insert id="write">
+		insert into board values(board_seq.nextval,#{title},#{contents},
+		#{writer},sysdate,#{viewCount},#{ipAddr},#{path})
+	</insert>
+
+	<select id="selectBoard" resultType="kh.spring.dto.BoardDTO">
+		select board_seq,title,writer,writedate,viewcount,path from 
+		(select board_seq,title,writer,writedate,viewcount,path,
+		rank() over(order by board_seq desc) rank from board) 
+		where rank between #{first} and #{first}+9
+	</select>
+
+	<select id="selectContents" resultType="kh.spring.dto.BoardDTO">
+		select title,writer,writedate,contents from board 
+		where board_seq=#{no}
+	</select>
+	
+	<update id="viewUp">
+		update board set viewcount=viewcount+1 where board_seq=#{no}
+	</update>
+	
+	<select id="boardCount" resultType="java.lang.Integer">
+		select count(*) from board
+	</select>
+	
+	<select id="boardSearchCount" resultType="java.lang.Integer">
+		select count(*) from board where title= #{title}
+	</select>
+
+	<update id="update">
+		update board set title=#{title}, contents=#{contents}, writedate=sysdate where board_seq=#{board_seq}
+	</update>
+
+	<delete id="delete">
+		delete from board where board_seq = #{no}
+	</delete>
+
+
+	<!-- <insert id="insert">
+		insert into member values(#{id}, #{pw}, #{name},
+		#{phone},
+		#{email}, #{zipcode}, #{address1}, #{address2}, sysdate, #{profileImg})
+	</insert>
+
+	<delete id="delId">
+		delete from member where id = #{id} and pw = #{pw}
+	</delete>
+
+	<update id="updateAll">
+		update member set pw=#{pw}, name=#{name},
+		phone=#{phone},
+		email=#{email}, zipcode=#{zipcode}, address1=#{address1},
+		address2=#{address2} where id = #{id}
+	</update>
+
+	<update id="updateNotPw">
+		update member set name=#{name}, phone=#{phone},
+		email=#{email}, zipcode=#{zipcode}, address1=#{address1},
+		address2=#{address2} where id = #{id}
+	</update> -->
+
+
+
+</mapper>
